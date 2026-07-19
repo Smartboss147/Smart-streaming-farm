@@ -201,6 +201,8 @@ export function generateInitialDevices(): VirtualDevice[] {
         isLoggedIn: Math.random() > 0.3,
         lastLogin: "2026-07-18 01:05",
         streamCount: Math.floor(Math.random() * 15) + 2,
+        impressions: Math.floor(Math.random() * 1000),
+        likes: Math.floor(Math.random() * 200),
       },
       // Real worldwide popular stream resources for continuous streaming
       youtubeId: [

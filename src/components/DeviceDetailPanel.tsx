@@ -498,6 +498,39 @@ export const DeviceDetailPanel: React.FC<DeviceDetailPanelProps> = ({
                     </div>
                   )}
 
+                  {targetDevice?.[selectedApp]?.isLoggedIn && selectedApp === "twitter" && (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between bg-emerald-950/20 p-1.5 rounded border border-emerald-500/15">
+                           <span className="text-emerald-500/40 font-bold">Impressions ({targetDevice.twitter.impressions}):</span>
+                           <button
+                             onClick={() => {
+                                const updatedTwitter = { ...targetDevice.twitter, impressions: targetDevice.twitter.impressions + 100 };
+                                const updatedDevice = { ...targetDevice, twitter: updatedTwitter };
+                                onUpdateDevice(updatedDevice);
+                                onAddLog(`[${targetDevice.name}] Added 100 impressions to Twitter.`, "SUCCESS", targetDevice.id);
+                             }}
+                             className="px-2 py-0.5 bg-sky-600 hover:bg-sky-700 rounded text-white text-[8px] font-bold"
+                           >
+                             +100 IMP
+                           </button>
+                        </div>
+                        <div className="flex items-center justify-between bg-emerald-950/20 p-1.5 rounded border border-emerald-500/15">
+                           <span className="text-emerald-500/40 font-bold">Likes ({targetDevice.twitter.likes}):</span>
+                           <button
+                             onClick={() => {
+                                const updatedTwitter = { ...targetDevice.twitter, likes: targetDevice.twitter.likes + 1 };
+                                const updatedDevice = { ...targetDevice, twitter: updatedTwitter };
+                                onUpdateDevice(updatedDevice);
+                                onAddLog(`[${targetDevice.name}] Added 1 like to Twitter.`, "SUCCESS", targetDevice.id);
+                             }}
+                             className="px-2 py-0.5 bg-sky-600 hover:bg-sky-700 rounded text-white text-[8px] font-bold"
+                           >
+                             +1 LIKE
+                           </button>
+                        </div>
+                    </div>
+                  )}
+
                   {/* Input Credentials */}
                   <div className="space-y-1.5">
                     <div className="relative">

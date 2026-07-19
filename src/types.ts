@@ -6,6 +6,11 @@ export interface AppAccount {
   isSubscribed?: boolean;
 }
 
+export interface TwitterAccount extends AppAccount {
+  impressions: number;
+  likes: number;
+}
+
 export interface VirtualDevice {
   id: number;
   name: string;
@@ -29,7 +34,7 @@ export interface VirtualDevice {
   youtube: AppAccount;
   spotify: AppAccount;
   appleMusic: AppAccount;
-  twitter: AppAccount;
+  twitter: TwitterAccount;
 
   // Real world global stream targets
   youtubeId?: string;
