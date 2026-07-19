@@ -15,23 +15,36 @@ import { StreamControls } from "./components/StreamControls";
 import { SoundwaveVisualizer } from "./components/SoundwaveVisualizer";
 import { StreamingWall } from "./components/StreamingWall";
 import { 
-  Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff, LayoutDashboard, MonitorPlay, Twitter
+  Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff, LayoutDashboard, MonitorPlay, Twitter, Menu, X, Search, Bell, User, Settings
 } from "lucide-react";
 
 export default function App() {
-  // 1. Core Stateful Parameters
   const [devices, setDevices] = useState<VirtualDevice[]>(() => generateInitialDevices());
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
-  const [pinnedDeviceIds, setPinnedDeviceIds] = useState<number[]>([1, 2]); // Pre-pin devices 1 and 2 for initial high fidelity showcase
+  const [pinnedDeviceIds, setPinnedDeviceIds] = useState<number[]>([1, 2]);
   const [logs, setLogs] = useState<LogEntry[]>(() => INITIAL_LOGS);
   const [isMuted, setIsMuted] = useState(false);
-  const [rotationRate, setRotationRate] = useState(25); // seconds
+  const [rotationRate, setRotationRate] = useState(25);
   const [credits, setCredits] = useState(1482.40);
   const [totalStreams, setTotalStreams] = useState(12845);
   const [blackoutActive, setBlackoutActive] = useState(false);
   const [timeText, setTimeText] = useState("");
-  const [isConstantIpMode, setIsConstantIpMode] = useState(true); // Default to true as requested
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'streaming' | 'twitter'>('dashboard');
+  const [isConstantIpMode, setIsConstantIpMode] = useState(true);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'streaming' | 'twitter' | 'spotify' | 'apple' | 'proxy' | 'device' | 'analytics' | 'logs' | 'settings'>('dashboard');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'streaming', label: 'Streaming Farm', icon: MonitorPlay },
+    { id: 'twitter', label: 'Twitter Automation', icon: Twitter },
+    { id: 'spotify', label: 'Spotify Automation', icon: Radio },
+    { id: 'apple', label: 'Apple Music', icon: Radio },
+    { id: 'proxy', label: 'Proxy Manager', icon: Network },
+    { id: 'device', label: 'Device Manager', icon: Cpu },
+    { id: 'analytics', label: 'Traffic Analytics', icon: Coins },
+    { id: 'logs', label: 'Logs', icon: Timer },
+    { id: 'settings', label: 'Settings', icon: ShieldAlert },
+  ];
 
   // Update clock simulating a high-precision terminal timer
   useEffect(() => {
@@ -431,97 +444,134 @@ export default function App() {
   }, [addLog]);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased flex">
-      
-      {/* Sidebar Navigation */}
-      <nav className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col gap-2">
-        <h1 className="text-xl font-bold mb-6 px-2 text-blue-900">Farm Dashboard</h1>
-        {[
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-          { id: 'streaming', label: 'Streaming Farm', icon: MonitorPlay },
-          { id: 'twitter', label: 'Twitter Automation', icon: Twitter },
-          { id: 'spotify', label: 'Spotify Automation', icon: Radio },
-          { id: 'apple', label: 'Apple Music', icon: Radio },
-          { id: 'proxy', label: 'Proxy Manager', icon: Network },
-          { id: 'device', label: 'Device Manager', icon: Cpu },
-          { id: 'analytics', label: 'Traffic Analytics', icon: Coins },
-          { id: 'logs', label: 'Logs', icon: Timer },
-          { id: 'settings', label: 'Settings', icon: ShieldAlert },
-        ].map(item => (
-          <button 
-            key={item.id}
-            onClick={() => setActiveTab(item.id as any)} 
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${activeTab === item.id ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'}`}
-          >
-            <item.icon className="w-5 h-5" /> {item.label}
-          </button>
-        ))}
-      </nav>
-
-      {/* Main Container */}
-      <div className="flex-1 p-8 bg-gray-50">
-
-        {activeTab === 'dashboard' && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Dashboard</h2>
-             <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-               <main className="xl:col-span-8 flex flex-col gap-4">
-                 <InteractiveMap devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
-               </main>
-               <aside className="xl:col-span-4 flex flex-col gap-4">
-                 <DeviceDetailPanel device={selectedDevice} devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
-                 <LogConsole logs={logs} onClearLogs={() => setLogs([])} />
-                 <StreamControls
-                    farmStatus={farmStatus}
-                    isMuted={isMuted}
-                    rotationRate={rotationRate}
-                    onSetRotationRate={setRotationRate}
-                    onMassCastTrack={handleMassCastTrack}
-                    onForceAllRotation={handleForceAllRotation}
-                    onBootAll={handleBootAll}
-                    onToggleMute={handleToggleMute}
-                    onToggleBlackout={handleToggleBlackout}
-                    isConstantIpMode={isConstantIpMode}
-                    onToggleConstantIpMode={() => {
-                        setIsConstantIpMode(prev => {
-                        const nextState = !prev;
-                        addLog(
-                            nextState 
-                            ? "Underground Order: CONSTANT IP MODE ACTIVE. Devices locked on current static geographic nodes securely."
-                            : "Warning: Constant IP constraints relaxed. Rotating dynamic proxies enabled.",
-                            nextState ? "SUCCESS" : "WARNING"
-                        );
-                        return nextState;
-                        });
-                    }}
-                    />
-               </aside>
-             </div>
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex flex-col">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-40 flex items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+          <button onClick={() => setIsMenuOpen(true)} className="md:hidden p-2 text-gray-600"><Menu /></button>
+          <h1 className="text-xl font-bold text-blue-900">Farm Dashboard</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative hidden md:block">
+            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+            <input className="pl-10 pr-4 py-2 border rounded-full text-sm w-64" placeholder="Search..." />
           </div>
-        )}
-        
-        {activeTab === 'streaming' && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Streaming Farm</h2>
-            <StreamingWall devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onSelectDevice={handleSelectDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
-          </div>
-        )}
+          <Bell className="w-6 h-6 text-gray-500 cursor-pointer" />
+          <User className="w-6 h-6 text-gray-500 cursor-pointer" />
+          <Settings className="w-6 h-6 text-gray-500 cursor-pointer" />
+        </div>
+      </header>
 
-        {activeTab === 'twitter' && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Twitter Automation</h2>
-            <DeviceGrid devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
-            {/* Placeholder for Campaign Manager */}
-            <div className="p-6 bg-gray-50 border rounded-lg">Twitter Campaign Manager placeholder</div>
-          </div>
-        )}
-        
-        {['spotify', 'apple', 'proxy', 'device', 'analytics', 'logs', 'settings'].includes(activeTab) && (
-            <div className="space-y-4">
-                <h2 className="text-2xl font-bold capitalize">{activeTab} Manager</h2>
-                <p>Placeholder for {activeTab} functionality.</p>
+      {/* Mobile Menu Drawer */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} />
+          <div className="fixed inset-y-0 left-0 w-72 bg-white p-6 z-50 flex flex-col gap-3 overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-xl font-bold text-blue-900">Menu</h1>
+              <button onClick={() => setIsMenuOpen(false)} className="p-2 text-gray-600"><X /></button>
             </div>
-        )}
+            {navItems.map(item => (
+              <button 
+                key={item.id}
+                onClick={() => { setActiveTab(item.id as any); setIsMenuOpen(false); }}
+                className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all font-bold ${
+                  activeTab === item.id 
+                    ? 'bg-blue-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                }`}
+              >
+                <item.icon className="w-7 h-7" /> {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Layout Content */}
+      <div className="flex flex-1 pt-16">
+        {/* Desktop Sidebar */}
+        <nav className="hidden md:flex w-72 bg-white border-r border-gray-200 p-6 flex-col gap-3 fixed top-16 bottom-0 overflow-y-auto">
+          {navItems.map(item => (
+            <button 
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)} 
+              className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all font-bold ${
+                activeTab === item.id 
+                  ? 'bg-blue-600 text-white shadow-lg' 
+                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+              }`}
+            >
+              <item.icon className="w-7 h-7" /> {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Main Content */}
+        <main className="flex-1 md:pl-72 p-10 bg-gray-50 overflow-y-auto">
+          <div className="max-w-7xl mx-auto space-y-8">
+            {activeTab === 'dashboard' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Dashboard</h2>
+                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                   <main className="xl:col-span-8 flex flex-col gap-8">
+                     <InteractiveMap devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
+                   </main>
+                   <aside className="xl:col-span-4 flex flex-col gap-8">
+                     <DeviceDetailPanel device={selectedDevice} devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
+                     <LogConsole logs={logs} onClearLogs={() => setLogs([])} />
+                     <StreamControls
+                        farmStatus={farmStatus}
+                        isMuted={isMuted}
+                        rotationRate={rotationRate}
+                        onSetRotationRate={setRotationRate}
+                        onMassCastTrack={handleMassCastTrack}
+                        onForceAllRotation={handleForceAllRotation}
+                        onBootAll={handleBootAll}
+                        onToggleMute={handleToggleMute}
+                        onToggleBlackout={handleToggleBlackout}
+                        isConstantIpMode={isConstantIpMode}
+                        onToggleConstantIpMode={() => {
+                            setIsConstantIpMode(prev => {
+                            const nextState = !prev;
+                            addLog(
+                                nextState 
+                                ? "Underground Order: CONSTANT IP MODE ACTIVE. Devices locked on current static geographic nodes securely."
+                                : "Warning: Constant IP constraints relaxed. Rotating dynamic proxies enabled.",
+                                nextState ? "SUCCESS" : "WARNING"
+                            );
+                            return nextState;
+                            });
+                        }}
+                        />
+                   </aside>
+                 </div>
+              </div>
+            )}
+            
+            {activeTab === 'streaming' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Streaming Farm</h2>
+                <StreamingWall devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onSelectDevice={handleSelectDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
+              </div>
+            )}
+
+            {activeTab === 'twitter' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Twitter Automation</h2>
+                <DeviceGrid devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
+                <div className="p-10 bg-white border border-gray-200 rounded-2xl shadow-sm text-center text-gray-500 font-medium">Twitter Campaign Manager placeholder</div>
+              </div>
+            )}
+            
+            {['spotify', 'apple', 'proxy', 'device', 'analytics', 'logs', 'settings'].includes(activeTab) && (
+                <div className="space-y-6">
+                    <h2 className="text-4xl font-bold text-gray-900 capitalize tracking-tight">{activeTab} Manager</h2>
+                    <div className="p-10 bg-white border border-gray-200 rounded-2xl shadow-sm text-center text-gray-500 font-medium">Placeholder for {activeTab} functionality.</div>
+                </div>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
