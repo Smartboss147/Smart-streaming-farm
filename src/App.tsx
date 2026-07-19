@@ -15,7 +15,7 @@ import { StreamControls } from "./components/StreamControls";
 import { SoundwaveVisualizer } from "./components/SoundwaveVisualizer";
 import { StreamingWall } from "./components/StreamingWall";
 import { 
-  Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff 
+  Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff, LayoutDashboard, MonitorPlay, Twitter
 } from "lucide-react";
 
 export default function App() {
@@ -31,6 +31,7 @@ export default function App() {
   const [blackoutActive, setBlackoutActive] = useState(false);
   const [timeText, setTimeText] = useState("");
   const [isConstantIpMode, setIsConstantIpMode] = useState(true); // Default to true as requested
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'streaming' | 'twitter'>('dashboard');
 
   // Update clock simulating a high-precision terminal timer
   useEffect(() => {
@@ -84,8 +85,8 @@ export default function App() {
         addLog(`Device Dev-${deviceId.toString().padStart(2, "0")} unprojected from active stream monitor.`, "INFO", deviceId);
         return prev.filter((id) => id !== deviceId);
       } else {
-        if (prev.length >= 6) {
-          addLog("Maximum streaming monitor wall slots (6) reached. Unproject another stream first.", "WARNING");
+        if (prev.length >= 50) {
+          addLog("Maximum streaming monitor wall slots (50) reached. Unproject another stream first.", "WARNING");
           return prev;
         }
         addLog(`Device Dev-${deviceId.toString().padStart(2, "0")} projected to live streaming wall. Streaming worldwide media!`, "SUCCESS", deviceId);
@@ -430,201 +431,77 @@ export default function App() {
   }, [addLog]);
 
   return (
-    <div className="min-h-screen bg-[#060a08] text-emerald-300 font-sans antialiased bg-grid-cyber flex flex-col justify-between select-none pb-4">
+    <div className="min-h-screen bg-white text-gray-900 font-sans antialiased flex flex-col pb-4">
       
-      {/* Decorative top green laser bar */}
-      <div className="h-1 bg-emerald-500 shadow-[0_0_12px_rgba(34,197,94,0.8)] z-50 w-full" />
+      {/* Navigation */}
+      <nav className="bg-gray-100 p-4 border-b border-gray-200 flex gap-4">
+        <button onClick={() => setActiveTab('dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'dashboard' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
+          <LayoutDashboard className="w-5 h-5" /> Dashboard
+        </button>
+        <button onClick={() => setActiveTab('streaming')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'streaming' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
+          <MonitorPlay className="w-5 h-5" /> Streaming
+        </button>
+        <button onClick={() => setActiveTab('twitter')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'twitter' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
+          <Twitter className="w-5 h-5" /> Twitter Impressions
+        </button>
+      </nav>
 
       {/* Main Container */}
-      <div className="w-full max-w-[1720px] mx-auto px-4 pt-4 flex-1 flex flex-col gap-4">
+      <div className="flex-1 p-4">
+        {activeTab === 'dashboard' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Dashboard</h2>
+             <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
+               <main className="xl:col-span-8 flex flex-col gap-4">
+                 <InteractiveMap devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
+               </main>
+               <aside className="xl:col-span-4 flex flex-col gap-4">
+                 <DeviceDetailPanel device={selectedDevice} devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
+                 <LogConsole logs={logs} onClearLogs={() => setLogs([])} />
+                 <StreamControls
+                    farmStatus={farmStatus}
+                    isMuted={isMuted}
+                    rotationRate={rotationRate}
+                    onSetRotationRate={setRotationRate}
+                    onMassCastTrack={handleMassCastTrack}
+                    onForceAllRotation={handleForceAllRotation}
+                    onBootAll={handleBootAll}
+                    onToggleMute={handleToggleMute}
+                    onToggleBlackout={handleToggleBlackout}
+                    isConstantIpMode={isConstantIpMode}
+                    onToggleConstantIpMode={() => {
+                        setIsConstantIpMode(prev => {
+                        const nextState = !prev;
+                        addLog(
+                            nextState 
+                            ? "Underground Order: CONSTANT IP MODE ACTIVE. Devices locked on current static geographic nodes securely."
+                            : "Warning: Constant IP constraints relaxed. Rotating dynamic proxies enabled.",
+                            nextState ? "SUCCESS" : "WARNING"
+                        );
+                        return nextState;
+                        });
+                    }}
+                    />
+               </aside>
+             </div>
+          </div>
+        )}
         
-        {/* Terminal Header Dashboard Area */}
-        <header id="console-header" className="bg-[#0b100d] border border-emerald-500/20 rounded-lg p-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 relative overflow-hidden shadow-md">
-          {/* Subtle green ambient light */}
-          <div className="absolute top-0 left-0 w-full h-full bg-radial-gradient from-emerald-500/5 to-transparent pointer-events-none" />
-          
-          <div className="flex items-center gap-3.5 z-10">
-            <div className="p-2.5 bg-emerald-950/50 rounded-lg border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-950/50">
-              <Network className="w-7 h-7 text-emerald-400 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-display font-black text-lg md:text-xl text-white tracking-widest glow-green">
-                  SMART STREAMING FARM
-                </h1>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-500/20">
-                  V4.11-STEALTH
-                </span>
-              </div>
-              <p className="text-[10px] md:text-xs font-mono text-emerald-500/60 mt-0.5">
-                Smart decentralized stream multiplier for global music and video dissemination.
-              </p>
-            </div>
+        {activeTab === 'streaming' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Streaming Wall</h2>
+            <StreamingWall devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onSelectDevice={handleSelectDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
           </div>
+        )}
 
-          {/* Real-time statistics counters */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto z-10">
-            {/* Active streams */}
-            <div className="bg-[#050906] border border-emerald-500/10 p-2 rounded-md flex flex-col justify-center shadow-inner">
-              <span className="text-[8px] font-mono text-emerald-500/40 uppercase">ACTIVE SESSION LINKS</span>
-              <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className="font-display text-base font-black text-white glow-green">
-                  {blackoutActive ? "00" : activeStreamsCount.toString().padStart(2, "0")}
-                </span>
-                <span className="text-[10px] font-mono text-emerald-500/40">/ 50 Sockets</span>
-              </div>
-            </div>
-
-            {/* Total Streams Counter */}
-            <div className="bg-[#050906] border border-emerald-500/10 p-2 rounded-md flex flex-col justify-center shadow-inner">
-              <span className="text-[8px] font-mono text-emerald-500/40 uppercase">TOTAL STREAM CYCLES</span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="font-display text-base font-black text-white">
-                  {totalStreams.toLocaleString()}
-                </span>
-                <span className="text-[9px] font-mono text-emerald-400">⚡</span>
-              </div>
-            </div>
-
-            {/* Cumulative Credits Gained */}
-            <div className="bg-[#050906] border border-emerald-500/10 p-2 rounded-md flex flex-col justify-center shadow-inner">
-              <span className="text-[8px] font-mono text-emerald-500/40 uppercase">SOMA-CREDITS ACCRUED</span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Coins className="w-4 h-4 text-yellow-400 animate-spin" style={{ animationDuration: "12s" }} />
-                <span className="font-display text-base font-black text-yellow-400 glow-amber">
-                  {credits.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            {/* System Clock */}
-            <div className="bg-[#050906] border border-emerald-500/10 p-2 rounded-md flex flex-col justify-center shadow-inner">
-              <span className="text-[8px] font-mono text-emerald-500/40 uppercase">TERMINAL CLOCK</span>
-              <span className="font-mono text-[10px] text-emerald-300 font-semibold tracking-tighter mt-1">
-                {timeText || "LOADING CLOCK..."}
-              </span>
-            </div>
+        {activeTab === 'twitter' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Twitter Impressions & Likes</h2>
+            <DeviceGrid devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
           </div>
-        </header>
-
-        {/* Narrative & Lore Alert Ticker */}
-        <div className="bg-[#091510] border-l-4 border-emerald-500/80 rounded-r-lg p-2.5 text-xs font-mono flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
-            <span className="text-emerald-400 font-bold shrink-0">UNDERCITY BROADCLEAR SIGNALS:</span>
-            <span className="text-emerald-300/80 leading-relaxed truncate">
-              {blackoutActive 
-                ? "WARNING: Blackout protocol is actively scrambling files! Hard shutdown complete. Devices offline."
-                : "The Mega-Corpora are hunting for stream generators. Avoid peaking stream density above 45/50 for extended stealth blocks."}
-            </span>
-          </div>
-          <span className="hidden sm:inline text-[9px] text-emerald-500/40 shrink-0 font-bold">
-            SEC_LEVEL: {farmStatus === "SHUTDOWN" ? "LOCKDOWN" : isMuted ? "STEALTH_95" : "SEC_GREEN_82"}
-          </span>
-        </div>
-
-        {/* Dashboard Work Arena */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-          
-          {/* LEFT AREA: Telemetry & Grid Maps (8 Cols) */}
-          <main className="xl:col-span-8 flex flex-col gap-4">
-            
-            {/* World Node Telemetry Map */}
-            <div className="relative">
-              <div className="absolute top-3 right-4 z-10 flex gap-2 font-mono text-[9px]">
-                <span className="flex items-center gap-1.5 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/20 text-emerald-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  ONLINE NODES
-                </span>
-                <span className="flex items-center gap-1.5 bg-zinc-950/80 px-2 py-0.5 rounded border border-zinc-500/20 text-zinc-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-                  OFFLINE CORES
-                </span>
-              </div>
-              <InteractiveMap
-                devices={devices}
-                selectedDevice={selectedDevice}
-                onSelectDevice={handleSelectDevice}
-              />
-            </div>
-
-            {/* Real-time Multimedia Streaming Wall */}
-            <StreamingWall
-              devices={devices}
-              pinnedIds={pinnedDeviceIds}
-              onTogglePin={handleTogglePinDevice}
-              onSelectDevice={handleSelectDevice}
-              onUpdateDevice={handleUpdateDevice}
-              onAddLog={addLog}
-            />
-
-            {/* Grid display of all 50 Devices */}
-            <DeviceGrid
-              devices={devices}
-              selectedDevice={selectedDevice}
-              onSelectDevice={handleSelectDevice}
-            />
-          </main>
-
-          {/* RIGHT AREA: Active metrics, individual diagnostics, logs, master commands (4 Cols) */}
-          <aside className="xl:col-span-4 flex flex-col gap-4">
-            
-            {/* Soundwave Stream telemetry */}
-            <SoundwaveVisualizer
-              activeCount={activeStreamsCount}
-              isMuted={isMuted}
-              farmStatus={farmStatus}
-            />
-
-            {/* Single Device detailed diagnostics */}
-            <DeviceDetailPanel
-              device={selectedDevice}
-              devices={devices}
-              pinnedIds={pinnedDeviceIds}
-              onTogglePin={handleTogglePinDevice}
-              onUpdateDevice={handleUpdateDevice}
-              onAddLog={addLog}
-            />
-
-            {/* Central Master Override Controls */}
-            <StreamControls
-              farmStatus={farmStatus}
-              isMuted={isMuted}
-              rotationRate={rotationRate}
-              onSetRotationRate={setRotationRate}
-              onMassCastTrack={handleMassCastTrack}
-              onForceAllRotation={handleForceAllRotation}
-              onBootAll={handleBootAll}
-              onToggleMute={handleToggleMute}
-              onToggleBlackout={handleToggleBlackout}
-              isConstantIpMode={isConstantIpMode}
-              onToggleConstantIpMode={() => {
-                setIsConstantIpMode(prev => {
-                  const nextState = !prev;
-                  addLog(
-                    nextState 
-                      ? "Underground Order: CONSTANT IP MODE ACTIVE. Devices locked on current static geographic nodes securely."
-                      : "Warning: Constant IP constraints relaxed. Rotating dynamic proxies enabled.",
-                    nextState ? "SUCCESS" : "WARNING"
-                  );
-                  return nextState;
-                });
-              }}
-            />
-
-            {/* Central logs terminal output */}
-            <LogConsole
-              logs={logs}
-              onClearLogs={() => setLogs([])}
-            />
-          </aside>
-        </div>
+        )}
       </div>
-
-      {/* Futuristic footer credit line */}
-      <footer className="mt-8 border-t border-emerald-500/10 pt-4 text-center font-mono text-[9px] text-emerald-500/30 tracking-widest">
-        STREAM-FARM TERMINAL CONSOLE SECURE LINK // DESIGNATED FOR DISCRIMINATE REBEL BROADCASTS ONLY
-      </footer>
     </div>
   );
 }
+
