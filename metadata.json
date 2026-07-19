@@ -1,0 +1,6 @@
+{
+  "name": "Smart Streaming Farm",
+  "description": "An immersive dashboard that simulates a secretive, dystopian music streaming farm, managing 50 virtual devices with unique global IPs, proxies, automated rotating traffic, and real-time network visualizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
