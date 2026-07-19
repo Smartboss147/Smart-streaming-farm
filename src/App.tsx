@@ -431,23 +431,36 @@ export default function App() {
   }, [addLog]);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans antialiased flex flex-col pb-4">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased flex">
       
-      {/* Navigation */}
-      <nav className="bg-gray-100 p-4 border-b border-gray-200 flex gap-4">
-        <button onClick={() => setActiveTab('dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'dashboard' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
-          <LayoutDashboard className="w-5 h-5" /> Dashboard
-        </button>
-        <button onClick={() => setActiveTab('streaming')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'streaming' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
-          <MonitorPlay className="w-5 h-5" /> Streaming
-        </button>
-        <button onClick={() => setActiveTab('twitter')} className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'twitter' ? 'bg-emerald-500 text-white' : 'hover:bg-gray-200'}`}>
-          <Twitter className="w-5 h-5" /> Twitter Impressions
-        </button>
+      {/* Sidebar Navigation */}
+      <nav className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col gap-2">
+        <h1 className="text-xl font-bold mb-6 px-2 text-blue-900">Farm Dashboard</h1>
+        {[
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { id: 'streaming', label: 'Streaming Farm', icon: MonitorPlay },
+          { id: 'twitter', label: 'Twitter Automation', icon: Twitter },
+          { id: 'spotify', label: 'Spotify Automation', icon: Radio },
+          { id: 'apple', label: 'Apple Music', icon: Radio },
+          { id: 'proxy', label: 'Proxy Manager', icon: Network },
+          { id: 'device', label: 'Device Manager', icon: Cpu },
+          { id: 'analytics', label: 'Traffic Analytics', icon: Coins },
+          { id: 'logs', label: 'Logs', icon: Timer },
+          { id: 'settings', label: 'Settings', icon: ShieldAlert },
+        ].map(item => (
+          <button 
+            key={item.id}
+            onClick={() => setActiveTab(item.id as any)} 
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${activeTab === item.id ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'}`}
+          >
+            <item.icon className="w-5 h-5" /> {item.label}
+          </button>
+        ))}
       </nav>
 
       {/* Main Container */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-8 bg-gray-50">
+
         {activeTab === 'dashboard' && (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Dashboard</h2>
@@ -489,16 +502,25 @@ export default function App() {
         
         {activeTab === 'streaming' && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Streaming Wall</h2>
+            <h2 className="text-2xl font-bold">Streaming Farm</h2>
             <StreamingWall devices={devices} pinnedIds={pinnedDeviceIds} onTogglePin={handleTogglePinDevice} onSelectDevice={handleSelectDevice} onUpdateDevice={handleUpdateDevice} onAddLog={addLog} />
           </div>
         )}
 
         {activeTab === 'twitter' && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Twitter Impressions & Likes</h2>
+            <h2 className="text-2xl font-bold">Twitter Automation</h2>
             <DeviceGrid devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
+            {/* Placeholder for Campaign Manager */}
+            <div className="p-6 bg-gray-50 border rounded-lg">Twitter Campaign Manager placeholder</div>
           </div>
+        )}
+        
+        {['spotify', 'apple', 'proxy', 'device', 'analytics', 'logs', 'settings'].includes(activeTab) && (
+            <div className="space-y-4">
+                <h2 className="text-2xl font-bold capitalize">{activeTab} Manager</h2>
+                <p>Placeholder for {activeTab} functionality.</p>
+            </div>
         )}
       </div>
     </div>
