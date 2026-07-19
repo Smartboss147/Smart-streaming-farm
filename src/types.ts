@@ -72,6 +72,19 @@ export interface ProxyConfig {
   reputation: "EXCELLENT" | "STABLE" | "FLAGGED" | "BLOCKED";
 }
 
+export interface TwitterCampaign {
+  id: string;
+  name: string;
+  targetUrl: string;
+  status: "Draft" | "Running" | "Paused" | "Completed";
+  targetLikes: number;
+  targetImpressions: number;
+  completedLikes: number;
+  completedImpressions: number;
+  assignedDevices: number[]; // Array of device IDs
+  startDate: string;
+}
+
 export interface StreamFarmStats {
   activeStreamsCount: number;
   totalDevicesCount: number;

@@ -14,6 +14,7 @@ import { LogConsole } from "./components/LogConsole";
 import { StreamControls } from "./components/StreamControls";
 import { SoundwaveVisualizer } from "./components/SoundwaveVisualizer";
 import { StreamingWall } from "./components/StreamingWall";
+import { TwitterCampaignManager } from './components/TwitterCampaignManager';
 import { 
   Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff, LayoutDashboard, MonitorPlay, Twitter, Menu, X, Search, Bell, User, Settings
 } from "lucide-react";
@@ -560,7 +561,7 @@ export default function App() {
               <div className="space-y-6">
                 <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Twitter Automation</h2>
                 <DeviceGrid devices={devices} selectedDevice={selectedDevice} onSelectDevice={handleSelectDevice} />
-                <div className="p-10 bg-white border border-gray-200 rounded-2xl shadow-sm text-center text-gray-500 font-medium">Twitter Campaign Manager placeholder</div>
+                <TwitterCampaignManager />
               </div>
             )}
             
