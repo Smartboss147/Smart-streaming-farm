@@ -29,6 +29,7 @@ export interface VirtualDevice {
   lifetimeStreams: number;
   battery: number; // simulated physical status
   sessionDuration: number; // current song play duration in seconds
+  successProbability?: number; // 0 - 100, simulated risk
   
   // App credentials & setup
   youtube: AppAccount;

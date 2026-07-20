@@ -177,6 +177,7 @@ export function generateInitialDevices(): VirtualDevice[] {
       lifetimeStreams: Math.floor(Math.random() * 140) + 12,
       battery: Math.floor(Math.random() * 45) + 55, // 55% - 100%
       sessionDuration: Math.floor(Math.random() * 150),
+      successProbability: Math.floor(Math.random() * 20) + 80,
       
       youtube: {
         username: `neon_streamer_${devNumStr}@rednet.net`,

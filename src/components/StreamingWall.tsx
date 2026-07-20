@@ -21,11 +21,20 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
   onUpdateDevice,
   onAddLog,
 }) => {
-  const pinnedDevices = devices.slice(0, 15);
+  const pinnedDevices = devices.filter(d => pinnedIds.includes(d.id));
   const [activeMediaTab, setActiveMediaTab] = useState<Record<number, "youtube" | "spotify" | "appleMusic">>({});
 
   // States to hold manual URLs for editing per device on the fly
   const [editingUrls, setEditingUrls] = useState<Record<number, string>>({});
+
+  // Ensure all pinned devices are active
+  React.useEffect(() => {
+    pinnedDevices.forEach(dev => {
+      if (dev.status !== "STREAMING") {
+        onUpdateDevice({ ...dev, status: "STREAMING" });
+      }
+    });
+  }, [pinnedDevices, onUpdateDevice]);
 
   const getMediaTab = (deviceId: number): "youtube" | "spotify" | "appleMusic" => {
     return activeMediaTab[deviceId] || "youtube";
@@ -122,6 +131,9 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
                     </span>
                     <span className="font-mono text-[8px] bg-emerald-900/40 border border-emerald-500/20 px-1 py-0.5 rounded text-emerald-300">
                       {dev.proxyIp.split(":")[0]} ({dev.proxyCountryCode})
+                    </span>
+                    <span className="font-mono text-[8px] bg-emerald-900/40 border border-emerald-500/20 px-1 py-0.5 rounded text-emerald-200">
+                      Prob: {dev.successProbability || 100}%
                     </span>
                   </div>
 
