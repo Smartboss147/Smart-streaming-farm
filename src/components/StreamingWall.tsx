@@ -226,6 +226,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => {
                       const updatedDev = { ...dev };
                       const isSub = currentTab === "youtube" 
@@ -349,6 +350,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
                       className="flex-1 bg-[#090d0b] border border-emerald-500/20 hover:border-emerald-500/30 rounded px-2 py-1 text-[9px] text-white placeholder-emerald-500/20 font-mono focus:outline-none focus:border-emerald-500/60"
                     />
                     <button
+                      type="button"
                       onClick={() => {
                         handleUpdateStreamId(dev.id, currentTab, editingVal);
                         setEditingUrls((prev) => ({ ...prev, [dev.id]: "" }));
