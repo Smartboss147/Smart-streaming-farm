@@ -370,7 +370,9 @@ export default function App() {
   // B. Mass Cast Song on all 50 devices
   const handleMassCastTrack = useCallback((trackId: string) => {
     const song = TRACK_PLAYLIST.find((t) => t.id === trackId);
-    if (!song) return;
+    
+    // If song not found, create a placeholder track object
+    const track = song || { id: trackId, title: trackId, artist: "Custom Feed", genre: "Manual" };
 
     setDevices((prev) =>
       prev.map((dev) => {
@@ -386,7 +388,7 @@ export default function App() {
     );
 
     addLog(
-      `MASTER OVERRIDE: Multicasting track '${song.title}' by ${song.artist} globally to all 50 devices. High-fidelity feed synchronized.`,
+      `MASTER OVERRIDE: Multicasting track '${track.title}' by ${track.artist} globally to all 50 devices. High-fidelity feed synchronized.`,
       "SUCCESS"
     );
   }, [addLog]);

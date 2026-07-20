@@ -98,25 +98,38 @@ export const StreamControls: React.FC<StreamControlsProps> = ({
         {/* Global Song Mass Casting */}
         <div>
           <span className="font-mono text-[9px] font-bold text-emerald-500/60 block mb-2">
-            🚀 PLAYLIST MULTICASTING (CAST SONG ON ALL 50 NODES)
+            🚀 MANUAL STREAM BINDING
           </span>
-          <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto pr-1 scrollbar-thin">
-            {TRACK_PLAYLIST.map((track) => (
-              <button
-                key={`cast-${track.id}`}
-                onClick={() => onMassCastTrack(track.id)}
-                disabled={farmStatus === "SHUTDOWN"}
-                className="p-1.5 bg-[#080d0a] hover:bg-emerald-950/25 border border-emerald-500/10 hover:border-emerald-500/40 rounded flex flex-col items-start transition-all disabled:opacity-40 text-left cursor-pointer"
-              >
-                <div className="font-sans text-[10px] font-bold text-emerald-200 truncate w-full flex items-center justify-between">
-                  {track.title}
-                  <Play className="w-2.5 h-2.5 text-emerald-400 shrink-0 ml-1" />
-                </div>
-                <div className="font-mono text-[8px] text-emerald-500/50 mt-0.5 truncate w-full">
-                  {track.artist} • {track.genre}
-                </div>
-              </button>
-            ))}
+          <div className="flex gap-1.5 mb-2">
+            <input
+              type="text"
+              placeholder="Enter Music/Video URL or ID"
+              className="flex-1 bg-[#080d0a] border border-emerald-500/20 hover:border-emerald-500/40 rounded px-2 py-1 text-[9px] text-white placeholder-emerald-500/30 font-mono focus:outline-none focus:border-emerald-500/60"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const val = (e.target as HTMLInputElement).value;
+                  if (val.trim()) {
+                    onMassCastTrack(val.trim());
+                    (e.target as HTMLInputElement).value = "";
+                  }
+                }
+              }}
+            />
+            <button
+              onClick={(e) => {
+                const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                if (input.value.trim()) {
+                  onMassCastTrack(input.value.trim());
+                  input.value = "";
+                }
+              }}
+              className="px-3 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500 text-emerald-300 rounded font-bold text-[9px] cursor-pointer"
+            >
+              BIND
+            </button>
+          </div>
+          <div className="font-mono text-[8px] text-emerald-500/40 italic">
+            Enter YouTube video ID or Spotify/Apple Music track ID to multicast to active nodes.
           </div>
         </div>
 
