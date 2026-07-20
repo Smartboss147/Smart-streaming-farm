@@ -380,6 +380,7 @@ export default function App() {
         return {
           ...dev,
           trackId: trackId,
+          youtubeId: trackId, // Update youtubeId for embed
           streamProgress: 0,
           sessionDuration: 0,
           status: "STREAMING", // Ensure all online devices are actively streaming it
