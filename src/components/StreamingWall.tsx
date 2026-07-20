@@ -21,7 +21,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
   onUpdateDevice,
   onAddLog,
 }) => {
-  const pinnedDevices = devices;
+  const pinnedDevices = devices.slice(0, 4);
   const [activeMediaTab, setActiveMediaTab] = useState<Record<number, "youtube" | "spotify" | "appleMusic">>({});
 
   // States to hold manual URLs for editing per device on the fly
