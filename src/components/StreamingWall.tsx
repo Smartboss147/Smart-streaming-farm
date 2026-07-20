@@ -36,10 +36,18 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
   };
 
   const handleUpdateStreamId = (deviceId: number, type: "youtube" | "spotify" | "appleMusic", value: string) => {
+    console.log("Binding device:", deviceId, type, value);
     const device = devices.find((d) => d.id === deviceId);
-    if (!device) return;
+    if (!device) {
+      console.error("Device not found:", deviceId);
+      return;
+    }
 
     let updatedValue = value.trim();
+    if (!updatedValue) {
+      console.warn("Empty value for binding");
+      return;
+    }
     
     // Auto-extract ID from full YouTube or Spotify URLs if pasted
     if (type === "youtube") {
