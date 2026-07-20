@@ -21,7 +21,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
   onUpdateDevice,
   onAddLog,
 }) => {
-  const pinnedDevices = devices.slice(0, 4);
+  const pinnedDevices = devices.slice(0, 15);
   const [activeMediaTab, setActiveMediaTab] = useState<Record<number, "youtube" | "spotify" | "appleMusic">>({});
 
   // States to hold manual URLs for editing per device on the fly
@@ -89,7 +89,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
         <div className="flex items-center gap-3 font-mono text-[9px]">
           <span className="text-emerald-500/50">PROJECTIONS ACTIVE:</span>
           <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500/30 text-emerald-300 font-bold rounded">
-            {pinnedIds.length} / 6 Devices
+            {pinnedIds.length} / 15 Devices
           </span>
         </div>
       </div>
@@ -103,7 +103,7 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {pinnedDevices.map((dev) => {
             const currentTab = getMediaTab(dev.id);
             const editingVal = editingUrls[dev.id] !== undefined ? editingUrls[dev.id] : "";
