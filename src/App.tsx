@@ -22,7 +22,7 @@ import {
 export default function App() {
   const [devices, setDevices] = useState<VirtualDevice[]>(() => generateInitialDevices());
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
-  const [pinnedDeviceIds, setPinnedDeviceIds] = useState<number[]>([1, 2]);
+  const [pinnedDeviceIds, setPinnedDeviceIds] = useState<number[]>(Array.from({length: 15}, (_, i) => i + 1));
   const [logs, setLogs] = useState<LogEntry[]>(() => INITIAL_LOGS);
   const [isMuted, setIsMuted] = useState(false);
   const [rotationRate, setRotationRate] = useState(25);
@@ -165,10 +165,6 @@ export default function App() {
             newProgress = 0;
             newLifetimeStreams += 1;
             completedCycle = true;
-            // Switch to a different track automatically for continuous streaming loop
-            const remainingTracks = TRACK_PLAYLIST.filter((t) => t.id !== dev.trackId);
-            const nextTrack = remainingTracks[Math.floor(Math.random() * remainingTracks.length)];
-            currentTrackId = nextTrack.id;
           }
 
           // Slow battery usage simulation (drains 0.1% to 0.4% per tick)
@@ -180,13 +176,10 @@ export default function App() {
             setCredits((c) => Number((c + gainedCredits).toFixed(2)));
             setTotalStreams((s) => s + 1);
 
-            const completedSong = TRACK_PLAYLIST.find((t) => t.id === dev.trackId);
-            const nextSongObj = TRACK_PLAYLIST.find((t) => t.id === currentTrackId);
-            
             // Queue log update outside state updater to avoid React race conditions
             setTimeout(() => {
               addLog(
-                `Stream cycle completed on '${completedSong?.title}' [+${gainedCredits} Soma-Credits]. Seamlessly routing to stream feed: '${nextSongObj?.title}'`,
+                `Stream cycle completed on '${dev.trackId || 'unknown'}' [+${gainedCredits} Soma-Credits]. Seamlessly looping stream feed.`,
                 "REWARD",
                 dev.id
               );
@@ -368,28 +361,41 @@ export default function App() {
   }, [addLog]);
 
   // B. Mass Cast Song on all 50 devices
-  const handleMassCastTrack = useCallback((trackId: string) => {
-    const song = TRACK_PLAYLIST.find((t) => t.id === trackId);
-    
-    // If song not found, create a placeholder track object
-    const track = song || { id: trackId, title: trackId, artist: "Custom Feed", genre: "Manual" };
+  const handleMassCastTrack = useCallback((inputUrl: string) => {
+    // Basic YouTube URL parsing
+    let videoId = inputUrl;
+    try {
+      if (inputUrl.includes("youtube.com") || inputUrl.includes("youtu.be")) {
+        const url = new URL(inputUrl);
+        if (url.hostname === "youtu.be") {
+          videoId = url.pathname.slice(1);
+        } else {
+          videoId = url.searchParams.get("v") || inputUrl;
+        }
+      }
+    } catch (e) {
+      // Ignore if not a valid URL
+    }
+
+    const track = { id: videoId, title: videoId, artist: "Custom Feed", genre: "Manual" };
 
     setDevices((prev) =>
       prev.map((dev) => {
-        if (dev.status === "OFFLINE") return dev;
         return {
           ...dev,
-          trackId: trackId,
-          youtubeId: trackId, // Update youtubeId for embed
+          trackId: videoId,
+          youtubeId: videoId, // Update youtubeId for embed
           streamProgress: 0,
           sessionDuration: 0,
-          status: "STREAMING", // Ensure all online devices are actively streaming it
+          status: "STREAMING", // Force all devices to STREAMING
+          streamRate: dev.streamRate || 256,
+          latency: dev.latency || Math.floor(Math.random() * 60) + 25,
         };
       })
     );
 
     addLog(
-      `MASTER OVERRIDE: Multicasting track '${track.title}' by ${track.artist} globally to all 50 devices. High-fidelity feed synchronized.`,
+      `MASTER OVERRIDE: Multicasting track '${track.title}' globally to all 50 devices. High-fidelity feed synchronized.`,
       "SUCCESS"
     );
   }, [addLog]);

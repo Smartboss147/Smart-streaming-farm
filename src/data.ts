@@ -147,14 +147,9 @@ export function generateInitialDevices(): VirtualDevice[] {
     const proxyIp = generateRandomIp();
     const proxyType = ["SOCKS5", "HTTPS", "HTTP"][Math.floor(Math.random() * 3)] as "SOCKS5" | "HTTPS" | "HTTP";
     const latency = Math.floor(Math.random() * 80) + 20; // 20ms - 100ms
-    const streamRate = [192, 256, 320][Math.floor(Math.random() * 3)];
-    const track = TRACK_PLAYLIST[Math.floor(Math.random() * TRACK_PLAYLIST.length)];
+    const streamRate = 0;
     
-    const rState = Math.random();
-    let status: "STREAMING" | "ROTATING" | "PAUSED" | "OFFLINE" | "ERROR" = "STREAMING";
-    if (rState < 0.05) status = "PAUSED";
-    else if (rState < 0.08) status = "OFFLINE";
-    else if (rState < 0.1) status = "ERROR";
+    let status: "STREAMING" | "ROTATING" | "PAUSED" | "OFFLINE" | "ERROR" = "OFFLINE";
 
     // Set default user logins that are initially logged in or can be manually modified/relogged
     const devNumStr = i.toString().padStart(2, "0");
@@ -168,15 +163,15 @@ export function generateInitialDevices(): VirtualDevice[] {
       proxyCountry: location.country,
       proxyCountryCode: location.code || "JP",
       proxyCity: location.city,
-      latency: status === "OFFLINE" ? 0 : latency,
-      streamRate: status === "STREAMING" ? streamRate : 0,
-      trackId: track.id,
+      latency: 0,
+      streamRate: 0,
+      trackId: "",
       status,
-      streamProgress: Math.floor(Math.random() * 95),
+      streamProgress: 0,
       uptime: Math.floor(Math.random() * 86400) + 3600, // 1 to 25 hours
       lifetimeStreams: Math.floor(Math.random() * 140) + 12,
       battery: Math.floor(Math.random() * 45) + 55, // 55% - 100%
-      sessionDuration: Math.floor(Math.random() * 150),
+      sessionDuration: 0,
       successProbability: Math.floor(Math.random() * 20) + 80,
       
       youtube: {

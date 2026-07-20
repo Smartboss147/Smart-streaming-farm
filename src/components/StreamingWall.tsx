@@ -27,10 +27,10 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
   // States to hold manual URLs for editing per device on the fly
   const [editingUrls, setEditingUrls] = useState<Record<number, string>>({});
 
-  // Ensure all pinned devices are active
+  // Ensure all pinned devices are active if they have a track
   React.useEffect(() => {
     pinnedDevices.forEach(dev => {
-      if (dev.status !== "STREAMING") {
+      if (dev.status !== "STREAMING" && dev.trackId) {
         onUpdateDevice({ ...dev, status: "STREAMING" });
       }
     });
@@ -185,52 +185,62 @@ export const StreamingWall: React.FC<StreamingWallProps> = ({
 
                 {/* Real Embed Platform Container */}
                 <div className="bg-black/90 border border-emerald-500/10 rounded-md overflow-hidden relative group">
-                  {currentTab === "youtube" && (
-                    <div className="w-full aspect-video bg-[#0c0d0e]">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${dev.youtubeId || "jfKfPfyJRdk"}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&iv_load_policy=3&theme=dark`}
-                        title={`YouTube stream for ${dev.name}`}
-                        className="w-full h-full border-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                  {!dev.trackId || dev.status === "OFFLINE" ? (
+                    <div className="w-full aspect-video bg-[#0c0d0e] flex flex-col items-center justify-center border border-emerald-500/20 text-emerald-500/50 font-mono text-xs">
+                      <MonitorPlay className="w-8 h-8 mb-2 opacity-50" />
+                      <span>NO SIGNAL BINDED</span>
+                      <span className="text-[9px] mt-1 opacity-70">Awaiting stream configuration</span>
                     </div>
-                  )}
+                  ) : (
+                    <>
+                      {currentTab === "youtube" && (
+                        <div className="w-full aspect-video bg-[#0c0d0e]">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${dev.youtubeId || dev.trackId}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&iv_load_policy=3&theme=dark`}
+                            title={`YouTube stream for ${dev.name}`}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      )}
 
-                  {currentTab === "spotify" && (
-                    <div className="w-full h-[80px] bg-[#0c0d0e] flex items-center justify-center p-1">
-                      <iframe
-                        src={`https://open.spotify.com/embed/track/${dev.spotifyId || "0VjIjW4GlUZAMY0vU6S6I6"}?utm_source=generator&theme=0`}
-                        title={`Spotify player for ${dev.name}`}
-                        width="100%"
-                        height="80"
-                        frameBorder="0"
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                        className="rounded-md"
-                      />
-                    </div>
-                  )}
+                      {currentTab === "spotify" && (
+                        <div className="w-full h-[80px] bg-[#0c0d0e] flex items-center justify-center p-1">
+                          <iframe
+                            src={`https://open.spotify.com/embed/track/${dev.spotifyId || dev.trackId}?utm_source=generator&theme=0`}
+                            title={`Spotify player for ${dev.name}`}
+                            width="100%"
+                            height="80"
+                            frameBorder="0"
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"
+                            className="rounded-md"
+                          />
+                        </div>
+                      )}
 
-                  {currentTab === "appleMusic" && (
-                    <div className="w-full h-[80px] bg-[#0c0d0e] flex items-center justify-center p-1">
-                      <iframe
-                        allow="autoplay *; encrypted-media *; fullscreen *"
-                        frameBorder="0"
-                        height="80"
-                        style={{ width: "100%", maxWidth: "100%", overflow: "hidden", borderRadius: "10px", background: "transparent" }}
-                        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                        src={`https://embed.music.apple.com/${dev.appleMusicId || "us/album/starboy-feat-daft-punk/1156434450"}`}
-                        title={`Apple Music player for ${dev.name}`}
-                      />
-                    </div>
-                  )}
+                      {currentTab === "appleMusic" && (
+                        <div className="w-full h-[80px] bg-[#0c0d0e] flex items-center justify-center p-1">
+                          <iframe
+                            allow="autoplay *; encrypted-media *; fullscreen *"
+                            frameBorder="0"
+                            height="80"
+                            style={{ width: "100%", maxWidth: "100%", overflow: "hidden", borderRadius: "10px", background: "transparent" }}
+                            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                            src={`https://embed.music.apple.com/${dev.appleMusicId || dev.trackId}`}
+                            title={`Apple Music player for ${dev.name}`}
+                          />
+                        </div>
+                      )}
 
-                  {/* Holographic Signal overlay */}
-                  <div className="absolute top-1 right-2 pointer-events-none flex gap-1 items-center bg-black/70 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[7px] font-mono text-emerald-400">
-                    <Volume2 className="w-2.5 h-2.5 text-emerald-400 animate-bounce" />
-                    <span>REAL STREAM</span>
-                  </div>
+                      {/* Holographic Signal overlay */}
+                      <div className="absolute top-1 right-2 pointer-events-none flex gap-1 items-center bg-black/70 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[7px] font-mono text-emerald-400">
+                        <Volume2 className="w-2.5 h-2.5 text-emerald-400 animate-bounce" />
+                        <span>REAL STREAM</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Subscriptions Hub Integration */}
