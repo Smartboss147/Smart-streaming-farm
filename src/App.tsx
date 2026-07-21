@@ -15,6 +15,13 @@ import { StreamControls } from "./components/StreamControls";
 import { SoundwaveVisualizer } from "./components/SoundwaveVisualizer";
 import { StreamingWall } from "./components/StreamingWall";
 import { TwitterCampaignManager } from './components/TwitterCampaignManager';
+import { SpotifyManager } from "./components/managers/SpotifyManager";
+import { AppleMusicManager } from "./components/managers/AppleMusicManager";
+import { ProxyManager } from "./components/managers/ProxyManager";
+import { DeviceManager } from "./components/managers/DeviceManager";
+import { AnalyticsManager } from "./components/managers/AnalyticsManager";
+import { LogsManager } from "./components/managers/LogsManager";
+import { SettingsManager } from "./components/managers/SettingsManager";
 import { 
   Coins, Radio, AlertTriangle, ShieldAlert, Cpu, Network, Timer, Play, EyeOff, LayoutDashboard, MonitorPlay, Twitter, Menu, X, Search, Bell, User, Settings
 } from "lucide-react";
@@ -574,11 +581,53 @@ export default function App() {
               </div>
             )}
             
-            {['spotify', 'apple', 'proxy', 'device', 'analytics', 'logs', 'settings'].includes(activeTab) && (
-                <div className="space-y-6">
-                    <h2 className="text-4xl font-bold text-gray-900 capitalize tracking-tight">{activeTab} Manager</h2>
-                    <div className="p-10 bg-white border border-gray-200 rounded-2xl shadow-sm text-center text-gray-500 font-medium">Placeholder for {activeTab} functionality.</div>
-                </div>
+            {activeTab === 'spotify' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Spotify Manager</h2>
+                <SpotifyManager />
+              </div>
+            )}
+            
+            {activeTab === 'apple' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Apple Music Manager</h2>
+                <AppleMusicManager />
+              </div>
+            )}
+            
+            {activeTab === 'proxy' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Proxy Manager</h2>
+                <ProxyManager />
+              </div>
+            )}
+            
+            {activeTab === 'device' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Device Manager</h2>
+                <DeviceManager devices={devices} />
+              </div>
+            )}
+            
+            {activeTab === 'analytics' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Analytics Manager</h2>
+                <AnalyticsManager />
+              </div>
+            )}
+            
+            {activeTab === 'logs' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Logs Manager</h2>
+                <LogsManager logs={logs} />
+              </div>
+            )}
+            
+            {activeTab === 'settings' && (
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Settings Manager</h2>
+                <SettingsManager />
+              </div>
             )}
           </div>
         </main>

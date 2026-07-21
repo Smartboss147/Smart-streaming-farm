@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { VirtualDevice } from "../types";
 import { 
-  Youtube, Music, Monitor, X, Play, Volume2, Shield, Settings, ExternalLink, RefreshCw 
+  Youtube, Music, Monitor, X, Play, Volume2, Shield, Settings, ExternalLink, RefreshCw, MonitorPlay
 } from "lucide-react";
 
 interface StreamingWallProps {
